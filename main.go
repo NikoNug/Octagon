@@ -4,6 +4,7 @@ import (
 	"octagon/route"
 	"strings"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
