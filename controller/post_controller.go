@@ -9,7 +9,7 @@ import (
 )
 
 func GetHelloWorld(c *fiber.Ctx) error {
-	return c.JSON("Hello World!")
+	return c.JSON("Welcome to the Octagon !")
 }
 
 func GetPosts(c *fiber.Ctx) error {
@@ -34,6 +34,11 @@ func GetPosts(c *fiber.Ctx) error {
 	}
 	// Return Employees in JSON format
 	return c.JSON(result)
+	// return c.Render("index", fiber.Map{
+	// 	"Title":    "Home Page",
+	// 	"Subtitle": "Post",
+	// 	"Data":     result.Posts,
+	// })
 }
 
 func GetPost(c *fiber.Ctx) error {
@@ -48,6 +53,10 @@ func GetPost(c *fiber.Ctx) error {
 	}
 	defer rows.Close()
 	defer db.Close()
+
+	for rows.Next() {
+		rows.Scan(&post.ID, &post.Title, &post.Body)
+	}
 
 	return c.JSON(post)
 }
@@ -98,5 +107,5 @@ func DeletePost(c *fiber.Ctx) error {
 	log.Println(res)
 
 	// Return Employee in JSON format
-	return c.JSON("Deleted")
+	return c.JSON("Data Deleted!")
 }

@@ -7,9 +7,14 @@ import (
 )
 
 func RouteInit(c *fiber.App) {
-	c.Get("/", controller.GetHelloWorld)
-	c.Get("/post/:id", controller.GetPost)
-	c.Get("/posts", controller.GetPosts)
-	c.Post("/post", controller.AddPost)
-	c.Delete("/post", controller.DeletePost)
+	v1 := c.Group("/post")
+	v1.Get("/posts", controller.GetPosts)
+	v1.Get("/", controller.GetHelloWorld)
+	v1.Get("/post/:id", controller.GetPost)
+	v1.Get("/posts", controller.GetPosts)
+	v1.Post("/post", controller.AddPost)
+	v1.Delete("/post", controller.DeletePost)
+
+	user := c.Group("user")
+	user.Get("/users", controller.GetPersons)
 }
