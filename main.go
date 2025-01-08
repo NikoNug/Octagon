@@ -1,6 +1,7 @@
 package main
 
 import (
+	"octagon/db"
 	"octagon/route"
 	"strings"
 
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	db.ConnectDB()
+	defer db.DB.Close()
 
 	engine := html.New("./views", ".html")
 

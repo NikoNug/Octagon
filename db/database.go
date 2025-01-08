@@ -2,16 +2,21 @@ package db
 
 import (
 	"database/sql"
+	"log"
 )
 
-func ConnectDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/octagon")
+var DB *sql.DB
+
+func ConnectDB() {
+	var err error
+
+	DB, err = sql.Open("mysql", "root:@tcp(localhost:3306)/octagon")
 	if err != nil {
-		panic(err)
+		log.Fatal("Error opening database: ", err)
 	}
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-	return db
+
+	// Set connection pool settings
+	DB.SetMaxIdleConns(10)
+	DB.SetMaxOpenConns(25)
+	DB.SetConnMaxLifetime(0)
 }

@@ -13,14 +13,11 @@ func GetHelloWorld(c *fiber.Ctx) error {
 }
 
 func GetPosts(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
-	rows, err := db.Query("SELECT id, title, body FROM posts order by id")
+	rows, err := db.DB.Query("SELECT id, title, body FROM posts order by id")
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 	defer rows.Close()
-	defer db.Close()
 	result := models.Posts{}
 
 	for rows.Next() {
@@ -42,17 +39,14 @@ func GetPosts(c *fiber.Ctx) error {
 }
 
 func GetPost(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	id := c.Params("id")
 	var post models.Post
 
-	rows, err := db.Query("SELECT * FROM posts WHERE id =?", id)
+	rows, err := db.DB.Query("SELECT * FROM posts WHERE id =?", id)
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 	defer rows.Close()
-	defer db.Close()
 
 	for rows.Next() {
 		rows.Scan(&post.ID, &post.Title, &post.Body)
@@ -62,8 +56,6 @@ func GetPost(c *fiber.Ctx) error {
 }
 
 func AddPost(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	// New Employee struct
 	u := new(models.Post)
 
@@ -73,12 +65,11 @@ func AddPost(c *fiber.Ctx) error {
 	}
 
 	// Insert Employee into database
-	rows, err := db.Query("INSERT INTO posts (title, body) VALUES (?,?)", u.Title, u.Body)
+	rows, err := db.DB.Query("INSERT INTO posts (title, body) VALUES (?,?)", u.Title, u.Body)
 	if err != nil {
 		return err
 	}
 	rows.Close()
-	db.Close()
 
 	// Print result
 	log.Println(rows)
@@ -88,8 +79,6 @@ func AddPost(c *fiber.Ctx) error {
 }
 
 func DeletePost(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	u := new(models.Post)
 
 	// Parse body into struct
@@ -98,7 +87,7 @@ func DeletePost(c *fiber.Ctx) error {
 	}
 
 	// Delete Employee from database
-	res, err := db.Query("DELETE FROM posts WHERE title =?", u.Title)
+	res, err := db.DB.Query("DELETE FROM posts WHERE title =?", u.Title)
 	if err != nil {
 		return err
 	}

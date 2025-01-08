@@ -15,8 +15,6 @@ import (
 )
 
 func Register(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	user := new(models.User)
 
 	if err := c.BodyParser(user); err != nil {
@@ -35,14 +33,13 @@ func Register(c *fiber.Ctx) error {
 
 	// Insert Employee into database
 	user.UserID = int(uuid.New().ID())
-	rows, err := db.Query("INSERT INTO users (UserID, FirstName, LastName, Username, Password, Email, Address, City) VALUES (?,?,?,?,?,?,?,?)", user.UserID, user.Firstname, user.Lastname, user.Username, hashedPassword, user.Email, user.Address, user.City)
+	rows, err := db.DB.Query("INSERT INTO users (UserID, FirstName, LastName, Username, Password, Email, Address, City) VALUES (?,?,?,?,?,?,?,?)", user.UserID, user.Firstname, user.Lastname, user.Username, hashedPassword, user.Email, user.Address, user.City)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 	rows.Close()
-	db.Close()
 
 	// Return Employee in JSON format
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -51,8 +48,6 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	userInput := new(models.User)
 	if err := c.BodyParser(&userInput); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -62,7 +57,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Cek credentials in db
 	user := new(models.User)
-	err := db.QueryRow(`SELECT Email, Password FROM users WHERE Email = ?`, userInput.Email).Scan(&user.Email, &user.Password)
+	err := db.DB.QueryRow(`SELECT Email, Password FROM users WHERE Email = ?`, userInput.Email).Scan(&user.Email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(fiber.Map{
@@ -127,8 +122,6 @@ func Logout(c *fiber.Ctx) error {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
-	db := db.ConnectDB()
-
 	user := new(models.User)
 
 	// Parse body into struct
@@ -137,13 +130,12 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 
 	// Delete Employee from database
-	rows, err := db.Query("DELETE FROM users WHERE UserID=?", user.UserID)
+	rows, err := db.DB.Query("DELETE FROM users WHERE UserID=?", user.UserID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
-	defer db.Close()
 	defer rows.Close()
 
 	// Print result
