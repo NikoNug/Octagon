@@ -79,7 +79,8 @@ func Login(c *fiber.Ctx) error {
 	// Create JWT Token
 	expTime := time.Now().Add(time.Minute * 1)
 	claims := &dtos.JWTClaim{
-		Email: user.Email,
+		Username: user.Username,
+		Email:    user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "octagon",
 			ExpiresAt: jwt.NewNumericDate(expTime),

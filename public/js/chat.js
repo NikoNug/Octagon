@@ -1,22 +1,24 @@
 // Ambil token dari cookie
-console.log("Cookies : ", document.cookie)
+console.log("Cookies : ", document.cookie);
 const token = document.cookie.replace("token=", "");
-console.log("Token from cookie : ", token)
+console.log("Token from cookie : ", token);
 let username = "user1"; // Username default jika token tidak ada
 
 // Jika ada token, decode untuk mendapatkan username (email)
 if (token) {
     try {
         const decodedToken = jwt_decode(token);  // Decode JWT
-        console.log("Decoded Token : ", decodedToken)
-        if(decodedToken.username){
-            username = decodedToken.username
+        console.log("Decoded Token : ", decodedToken);
+        if(decodedToken.Username){
+            username = decodedToken.Username
         }else if(decodedToken.Email){
             username = decodedToken.Email
         }
     } catch (err) {
         console.error("Error decoding JWT:", err);
     }
+}else{
+    alert("Please login first...");
 }
 
 console.log("Using username: ", username); // Debugging username yang digunakan

@@ -33,7 +33,7 @@ func RouteInit(c *fiber.App) {
 	chat.Use(middlewares.JWTMiddleware())
 	chat.Get("/ws", controller.WebSocketHandler, websocket.New(controller.HandleWebSocket))
 
-	c.Get("/chat.html", func(c *fiber.Ctx) error {
+	chat.Get("/chat.html", func(c *fiber.Ctx) error {
 		return c.Render("chat", fiber.Map{})
 	})
 

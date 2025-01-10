@@ -17,7 +17,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         if (response.ok) {
             const data = await response.json();
             alert("Login successful: " + data.message);
-            window.location.href = "/chat.html";
+            window.location.href = "/chat/chat.html";
         } else {
             const error = await response.json();
             alert("Login failed: " + error.error);

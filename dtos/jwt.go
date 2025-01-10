@@ -7,6 +7,7 @@ import (
 var JWT_KEY = []byte("octagon")
 
 type JWTClaim struct {
-	Email string
+	Username string
+	Email    string
 	jwt.RegisteredClaims
 }

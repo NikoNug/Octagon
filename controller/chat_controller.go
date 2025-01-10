@@ -66,13 +66,22 @@ func removeConnection(currentConn *models.WebSocketConnection) {
 
 func broadcastMessage(currentConn *models.WebSocketConnection, kind, message string) {
 	for _, conn := range connections {
-		// if conn == currentConn {
-		// 	continue
-		// }
+		responseMessage := message
+
+		// Jika pesan adalah MESSAGE_NEW_USER
+		if kind == MESSAGE_NEW_USER {
+			responseMessage = currentConn.Username + " joined chat..."
+		}
+
+		// Jika pesan adalah MESSAGE_LEAVE
+		if kind == MESSAGE_LEAVE {
+			responseMessage = currentConn.Username + " leaving chat..."
+		}
+
 		err := conn.Conn.WriteJSON(models.SocketResponse{
 			From:    currentConn.Username,
 			Type:    kind,
-			Message: message,
+			Message: responseMessage,
 		})
 		if err != nil {
 			log.Println("ERROR", err)
