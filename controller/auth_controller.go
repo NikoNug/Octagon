@@ -57,7 +57,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Cek credentials in db
 	user := new(models.User)
-	err := db.DB.QueryRow(`SELECT Email, Password FROM users WHERE Email = ?`, userInput.Email).Scan(&user.Email, &user.Password)
+	err := db.DB.QueryRow(`SELECT Email, Password, Username FROM users WHERE Email = ?`, userInput.Email).Scan(&user.Email, &user.Password, &user.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(fiber.Map{
@@ -99,11 +99,15 @@ func Login(c *fiber.Ctx) error {
 		Name:     "token",
 		Path:     "/",
 		Value:    token,
-		HTTPOnly: true,
+		HTTPOnly: false,
+		Secure:   false,
+		SameSite: "None",
+		MaxAge:   3600,
 	})
 
 	return c.Status(200).JSON(fiber.Map{
-		"message": "Login Success!",
+		"message":  "Login Success!",
+		"username": user.Username,
 	})
 }
 

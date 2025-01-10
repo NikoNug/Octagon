@@ -15,13 +15,11 @@ func main() {
 	db.ConnectDB()
 	defer db.DB.Close()
 
-	engine := html.New("./views", ".html")
+	engine := html.New("./templates", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
-
-	app.Use(cors.New())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -33,6 +31,8 @@ func main() {
 			fiber.MethodDelete,
 		}, ","),
 	}))
+
+	app.Static("/", "./public")
 
 	route.RouteInit(app)
 

@@ -5,6 +5,7 @@ import (
 	"octagon/middlewares"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 )
 
 func RouteInit(c *fiber.App) {
@@ -14,12 +15,31 @@ func RouteInit(c *fiber.App) {
 	user.Get("/logout", controller.Logout)
 	user.Delete("/user", controller.DeleteUser)
 
-	v1 := c.Group("/post")
-	v1.Use(middlewares.JWTMiddleware())
-	v1.Get("/posts", controller.GetPosts)
-	v1.Get("/", controller.GetHelloWorld)
-	v1.Get("/post/:id", controller.GetPost)
-	v1.Get("/posts", controller.GetPosts)
-	v1.Post("/post", controller.AddPost)
-	v1.Delete("/post", controller.DeletePost)
+	protected := c.Group("/post")
+	protected.Use(middlewares.JWTMiddleware())
+	protected.Get("/posts", controller.GetPosts)
+	protected.Get("/post/:id", controller.GetPost)
+	protected.Get("/posts", controller.GetPosts)
+	protected.Post("/post", controller.AddPost)
+	protected.Delete("/post", controller.DeletePost)
+
+	protected.Get("/", controller.GetHelloWorld)
+
+	// Route untuk halaman chat
+	c.Get("/chat.html", func(c *fiber.Ctx) error {
+		return c.Render("chat", fiber.Map{})
+	})
+
+	chat := c.Group("/chat")
+	// chat.Use(middlewares.JWTMiddleware())
+	chat.Get("/ws", controller.WebSocketHandler, websocket.New(controller.HandleWebSocket))
+
+	c.Get("/login.html", func(c *fiber.Ctx) error {
+		return c.Render("login", nil) // Render login template
+	})
+
+	protectedDashboard := c.Group("/protected")
+	protectedDashboard.Use(middlewares.JWTMiddleware())
+	protectedDashboard.Get("/dashboard", controller.Dashboard)
+
 }
