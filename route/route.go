@@ -25,21 +25,16 @@ func RouteInit(c *fiber.App) {
 
 	protected.Get("/", controller.GetHelloWorld)
 
-	// Route untuk halaman chat
-	c.Get("/chat.html", func(c *fiber.Ctx) error {
-		return c.Render("chat", fiber.Map{})
-	})
-
-	chat := c.Group("/chat")
-	// chat.Use(middlewares.JWTMiddleware())
-	chat.Get("/ws", controller.WebSocketHandler, websocket.New(controller.HandleWebSocket))
-
 	c.Get("/login.html", func(c *fiber.Ctx) error {
 		return c.Render("login", nil) // Render login template
 	})
 
-	protectedDashboard := c.Group("/protected")
-	protectedDashboard.Use(middlewares.JWTMiddleware())
-	protectedDashboard.Get("/dashboard", controller.Dashboard)
+	chat := c.Group("/chat")
+	chat.Use(middlewares.JWTMiddleware())
+	chat.Get("/ws", controller.WebSocketHandler, websocket.New(controller.HandleWebSocket))
+
+	c.Get("/chat.html", func(c *fiber.Ctx) error {
+		return c.Render("chat", fiber.Map{})
+	})
 
 }

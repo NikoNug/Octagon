@@ -79,11 +79,3 @@ func broadcastMessage(currentConn *models.WebSocketConnection, kind, message str
 		}
 	}
 }
-
-// Dashboard displays user-specific information
-func Dashboard(c *fiber.Ctx) error {
-	user := c.Locals("user") // Retrieve the email from JWT claim
-	return c.JSON(fiber.Map{
-		"message": "Welcome to the dashboard, " + user.(string),
-	})
-}
