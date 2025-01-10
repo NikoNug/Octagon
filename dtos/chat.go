@@ -1,4 +1,4 @@
-package models
+package dtos
 
 import "github.com/gofiber/websocket/v2"
 

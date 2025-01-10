@@ -2,14 +2,14 @@ package controller
 
 import (
 	"log"
-	"octagon/models"
+	"octagon/dtos"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 )
 
-var connections []*models.WebSocketConnection
+var connections []*dtos.WebSocketConnection
 
 const (
 	MESSAGE_NEW_USER = "new_user"
@@ -32,14 +32,14 @@ func HandleWebSocket(conn *websocket.Conn) {
 	}()
 
 	username := conn.Query("username")
-	currentConn := &models.WebSocketConnection{Conn: conn, Username: username}
+	currentConn := &dtos.WebSocketConnection{Conn: conn, Username: username}
 	connections = append(connections, currentConn)
 
 	// Notify all users
 	broadcastMessage(currentConn, MESSAGE_NEW_USER, "")
 
 	for {
-		var payload models.SocketPayload
+		var payload dtos.SocketPayload
 		err := conn.ReadJSON(&payload)
 		if err != nil {
 			if strings.Contains(err.Error(), "websocket: close") {
@@ -54,8 +54,8 @@ func HandleWebSocket(conn *websocket.Conn) {
 	}
 }
 
-func removeConnection(currentConn *models.WebSocketConnection) {
-	var updatedConnections []*models.WebSocketConnection
+func removeConnection(currentConn *dtos.WebSocketConnection) {
+	var updatedConnections []*dtos.WebSocketConnection
 	for _, conn := range connections {
 		if conn != currentConn {
 			updatedConnections = append(updatedConnections, conn)
@@ -64,7 +64,7 @@ func removeConnection(currentConn *models.WebSocketConnection) {
 	connections = updatedConnections
 }
 
-func broadcastMessage(currentConn *models.WebSocketConnection, kind, message string) {
+func broadcastMessage(currentConn *dtos.WebSocketConnection, kind, message string) {
 	for _, conn := range connections {
 		responseMessage := message
 
@@ -78,7 +78,7 @@ func broadcastMessage(currentConn *models.WebSocketConnection, kind, message str
 			responseMessage = currentConn.Username + " leaving chat..."
 		}
 
-		err := conn.Conn.WriteJSON(models.SocketResponse{
+		err := conn.Conn.WriteJSON(dtos.SocketResponse{
 			From:    currentConn.Username,
 			Type:    kind,
 			Message: responseMessage,
