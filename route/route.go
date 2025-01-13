@@ -19,7 +19,6 @@ func RouteInit(c *fiber.App) {
 	protected.Use(middlewares.JWTMiddleware())
 	protected.Get("/posts", controller.GetPosts)
 	protected.Get("/post/:id", controller.GetPost)
-	protected.Get("/posts", controller.GetPosts)
 	protected.Post("/post", controller.AddPost)
 	protected.Delete("/post", controller.DeletePost)
 

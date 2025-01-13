@@ -32,8 +32,8 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	// Insert Employee into database
-	user.UserID = int(uuid.New().ID())
-	rows, err := db.DB.Query("INSERT INTO users (UserID, FirstName, LastName, Username, Password, Email, Address, City) VALUES (?,?,?,?,?,?,?,?)", user.UserID, user.Firstname, user.Lastname, user.Username, hashedPassword, user.Email, user.Address, user.City)
+	userID := uuid.New().ID()
+	rows, err := db.DB.Query("INSERT INTO users (UserID, FirstName, LastName, Username, Password, Email, Address, City) VALUES (?,?,?,?,?,?,?,?)", userID, user.Firstname, user.Lastname, user.Username, hashedPassword, user.Email, user.Address, user.City)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
