@@ -57,7 +57,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Cek credentials in db
 	user := new(models.User)
-	err := db.DB.QueryRow(`SELECT Email, Password, Username FROM users WHERE Email = ?`, userInput.Email).Scan(&user.Email, &user.Password, &user.Username)
+	err := db.DB.QueryRow(`SELECT UserID, Email, Password, Username FROM users WHERE Email = ?`, userInput.Email).Scan(&user.UserID, &user.Email, &user.Password, &user.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(fiber.Map{
@@ -109,6 +109,7 @@ func Login(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message":  "Login Success!",
 		"username": user.Username,
+		"user_id":  user.UserID,
 	})
 }
 

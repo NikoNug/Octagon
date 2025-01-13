@@ -66,7 +66,7 @@ func GetPosts(c *fiber.Ctx) error {
 // 	return c.JSON(post)
 // }
 
-func GetPost(c *fiber.Ctx) error {
+func GetPostById(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	// Validasi ID
@@ -118,17 +118,23 @@ func AddPost(c *fiber.Ctx) error {
 		return c.Status(400).SendString(err.Error())
 	}
 
+	userEmail := c.Locals("user")
+	var userID string
+	err := db.DB.QueryRow(`SELECT UserID FROM users WHERE Email = ?`, userEmail).Scan(&userID)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
+
 	// Insert Employee into database
 	// rows, err := db.DB.Query("INSERT INTO posts (UserID, body) VALUES (?,?)", u.Title, u.Body)
 	// insert into posts (UserID, Title, Body, ImageURL) values (347978433, "Berbicara", "Bagaimana Caranya?", "test.jpg")
-	rows, err := db.DB.Query("insert into posts (UserID, Title, Body, ImageURL) values (?,?,?,?)", u.UserID, u.Title, u.Body, u.ImageURL)
+	rows, err := db.DB.Query("insert into posts (UserID, Title, Body, ImageURL) values (?,?,?,?)", userID, u.Title, u.Body, u.ImageURL)
 	if err != nil {
 		return err
 	}
 	rows.Close()
-
-	// Print result
-	log.Println(rows)
 
 	// Return Employee in JSON format
 	return c.JSON(u)
